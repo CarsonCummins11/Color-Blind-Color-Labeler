@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <video playsinline autoplay></video>
+    <div id="penis"></div>
+    <canvas id="poop"></canvas>
+</body>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="https://www.color-blindness.com/color-name-hue-tool/js/ntc.js"></script>
+<script>
+'use strict';
+
+// Put variables in global scope to make them available to the browser console.
+const video = document.querySelector('video');
+const canvas = window.canvas = document.querySelector('canvas');
+canvas.width = 480;
+canvas.height = 360;
+const constraints = {
+  audio: false,
+  video: true
+};
+
+function handleSuccess(stream) {
+  window.stream = stream; // make stream available to browser console
+  video.srcObject = stream;
+}
+
+function handleError(error) {
+  console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+}
+
+navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+function handleMouseMove(event){
+    var eventDoc, doc, body;
+
+event = event || window.event; // IE-ism
+
+// If pageX/Y aren't available and clientX/Y are,
+// calculate pageX/Y - logic taken from jQuery.
+// (This is to support old IE)
+if (event.pageX == null && event.clientX != null) {
+    eventDoc = (event.target && event.target.ownerDocument) || document;
+    doc = eventDoc.documentElement;
+    body = eventDoc.body;
+
+    event.pageX = event.clientX +
+      (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+      (doc && doc.clientLeft || body && body.clientLeft || 0);
+    event.pageY = event.clientY +
+      (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+      (doc && doc.clientTop  || body && body.clientTop  || 0 );
+}
+let color_text = document.getElementById("penis");
+canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+  var p = canvas.getContext('2d').getImageData(event.pageX, event.pageY, 1, 1).data; 
+  function rgbToHex(r, g, b) {
+    function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+  color_text.innerHTML = ntc.name(rgbToHex(p[0],p[1],p[2]))[1];
+}
+document.onmousemove = handleMouseMove;
+</script>
+</html>
